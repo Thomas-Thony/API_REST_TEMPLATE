@@ -1,10 +1,11 @@
 <?php
 
 namespace ApiTemplate\Controllers;
-use ApiTemplate\Models\AuthModel;
 use ApiTemplate\Handlers\ApiHandler;
 use ApiTemplate\Handlers\Globals;
+use ApiTemplate\Models\AuthModel;
 use Firebase\JWT\JWT;
+use Exception;
 use PDO;
 
 require_once "./Models/auth.php";
@@ -32,11 +33,28 @@ class AuthController {
         }
     }
 
-    public static function register(PDO $pdo, string $username, string $name, string $mail, string $password): bool {
+    public static function register(PDO $pdo, string $username, string $name, string $mail, string $password): string|bool {
         return AuthModel::getRegister($pdo,  $username, $name, $mail, $password);
     }
 
-    public static function logout(): bool {
-        return true;
+    public static function logout(PDO $pdo) {
+        $decodeToken = checkJWT($pdo);
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+        $token = str_replace('Bearer ', '', $authHeader);
+
+        try {
+            $stmt = $pdo->prepare("INSERT INTO jwt_blacklist (token, expires_at) VALUES (:token, :expires_at)");
+            $stmt->execute([
+                ':token' => $token,
+                ':expires_at' => date('Y-m-d H:i:s', $decodeToken->exp)
+            ]);
+
+            return json_encode(["success" => true, "message" => "Déconnexion réussie"]);
+
+        } catch (Exception $e) {
+            http_response_code(500);
+            return json_encode(["error" => "Erreur lors de la déconnexion", "Informations" => $e->getMessage()]);
+        }
     }
 }

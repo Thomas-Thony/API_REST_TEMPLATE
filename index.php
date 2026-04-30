@@ -45,7 +45,7 @@ if (isset($segments[1])) {
 
     if ($mainPath === "logout" && $method === "POST") {
         $data = json_decode(file_get_contents('php://input'), true);
-        $resultat = logout($pdo, $data);
+        $resultat = logout($pdo);
     }
     #endregion
 }

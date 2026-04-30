@@ -103,5 +103,7 @@ class HeaderHttpHandler {
         return 0; // Send succes code to server
     }
 
-    
+    public function requestValid() : bool {
+        return true;
+    }
 }

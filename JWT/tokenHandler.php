@@ -31,7 +31,7 @@ function decodeToken(array $data): string {
  *
  * @return stdClass|null
  */
-function checkJWT(): ?stdClass {
+function checkJWT(PDO $pdo): ?stdClass {
     $headers = getallheaders();
     $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
     if (!$authHeader) {
@@ -42,12 +42,24 @@ function checkJWT(): ?stdClass {
     $token = str_replace('Bearer ', '', $authHeader);
     try {
         $globals = new Globals();
-        return JWT::decode($token, new Key($globals->getJwtEncodeKey(), 'HS256'));
+        $decoded = JWT::decode($token, new Key($globals->getJwtEncodeKey(), 'HS256'));
+        if (isTokenBlacklisted($pdo, $token)) {
+            http_response_code(401);
+            echo json_encode(["error" => "Token invalide", "Informations" => "Token révoqué"]);
+            exit;
+        }
+        return $decoded;
     } catch (Exception $e) {
         http_response_code(401);
         echo json_encode(["error" => "Token invalide", "Informations" => $e->getMessage()]);
         exit;
     }
+}
+
+function isTokenBlacklisted(PDO $pdo, string $token) : bool {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM jwt_blacklist WHERE token = :token AND expires_at > NOW()");
+    $stmt->execute([':token' => $token]);
+    return $stmt->fetchColumn() > 0;
 }
 
 #endregion

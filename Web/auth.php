@@ -27,6 +27,6 @@ function register(PDO $pdo, array $data) : string | bool {
 
 }
 
-function logout(PDO $pdo, array $data) : bool {
-    return true;
+function logout(PDO $pdo){
+    return AuthController::logout($pdo);
 }
