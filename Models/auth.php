@@ -2,6 +2,7 @@
 
 namespace ApiTemplate\Models;
 
+use ApiTemplate\Controllers\AuthController;
 use PDO;
 use Exception;
 
@@ -21,7 +22,7 @@ class AuthModel {
     }
 
     public static function getRegister(PDO $pdo, string $username, string $name, string $mail, string $password): string|bool {
-        $actualDate = date("YY-MM-dd");
+        $actualDate = date("Y-m-d");
         try {
             $stmt = $pdo->prepare("INSERT INTO users (username, name, mail, password, created) VALUES (:username, :name, :mail, :password, :created);");
             $stmt->bindParam(":username", $username, PDO::PARAM_STR);
@@ -31,7 +32,7 @@ class AuthModel {
             $stmt->bindParam(":created", $actualDate, PDO::PARAM_STR);
             $stmt->execute();
 
-            return json_encode(["User created with success !"]);
+            return AuthController::login($pdo, $mail, $password);
 
         } catch (Exception $e) {
             return json_encode([$e->getMessage()]);

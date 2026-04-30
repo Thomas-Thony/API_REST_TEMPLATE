@@ -15,7 +15,7 @@ class AuthController {
         
         $user = AuthModel::tryLogin($pdo, $mail);
         if (empty($user) === true) {
-            return json_encode("Login failed !");
+            return ApiHandler::authentificationFailed("Mail or password incorrect");
         } else {
             $userPassword = $user["password"];
             if(password_verify($userPassword, $password) === true){
@@ -28,13 +28,17 @@ class AuthController {
                 $jwt = JWT::encode($payload, $global->getJwtEncodeKey(), "HS256");
                 return json_encode(["token" => $jwt]);
             } else {
-                return ApiHandler::authentificationFailed("Login failed !");
+                return ApiHandler::authentificationFailed("Mail or password incorrect");
             }
         }
     }
 
     public static function register(PDO $pdo, string $username, string $name, string $mail, string $password): string|bool {
-        return AuthModel::getRegister($pdo,  $username, $name, $mail, $password);
+        if(self::userExist($pdo, $mail) !== true){
+            return AuthModel::getRegister($pdo,  $username, $name, $mail, $password);
+        } else {
+                return json_encode("This user already exist !");
+        }
     }
 
     public static function logout(PDO $pdo) {
@@ -56,5 +60,10 @@ class AuthController {
             http_response_code(500);
             return json_encode(["error" => "Erreur lors de la déconnexion", "Informations" => $e->getMessage()]);
         }
+    }
+
+    public static function userExist(PDO $pdo, string $mail) : bool {
+        $user = AuthModel::tryLogin($pdo, $mail);
+        return !empty($user);
     }
 }
