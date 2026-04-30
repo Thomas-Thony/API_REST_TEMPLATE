@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:3306
--- Généré le : jeu. 30 avr. 2026 à 08:01
+-- Généré le : jeu. 30 avr. 2026 à 13:05
 -- Version du serveur : 5.7.33
 -- Version de PHP : 8.3.29
 
@@ -76,13 +76,23 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pour la table `jwt_blacklist`
 --
 ALTER TABLE `jwt_blacklist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `jwt_blacklist`
+--
+ALTER TABLE `jwt_blacklist`
+  ADD CONSTRAINT `FKuser` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
