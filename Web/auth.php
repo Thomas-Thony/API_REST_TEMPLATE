@@ -11,8 +11,7 @@ function login(PDO $pdo, array $data) : string | bool{
     } else {
         $mail = $data["mail"];
         $password = $data["password"];
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        return AuthController::login($pdo, $mail, $hashedPassword);
+        return AuthController::login($pdo, $mail, $password);
     }
 }
 

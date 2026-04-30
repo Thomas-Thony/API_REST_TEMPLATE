@@ -29,7 +29,7 @@ class AuthController {
                 $jwt = JWT::encode($payload, $global->getJwtEncodeKey(), "HS256");
                 return json_encode(["token" => $jwt]);
             } else {
-                return ApiHandler::authentificationFailed("Mail or password incorrect");
+                return ApiHandler::authentificationFailed("Mail or password incorrect 2 hashed ");
             }
         }
     }
