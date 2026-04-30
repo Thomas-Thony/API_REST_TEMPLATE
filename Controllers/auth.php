@@ -2,10 +2,13 @@
 
 namespace ApiTemplate\Controllers;
 require_once "./Handlers/Globals.php";
+require_once "./Handlers/tokenHandler.php";
 use ApiTemplate\Handlers\ApiHandler;
 use ApiTemplate\Handlers\Globals;
+use ApiTemplate\Handlers\TokenHandler;
 use ApiTemplate\Models\AuthModel;
 use Firebase\JWT\JWT;
+
 use Exception;
 use PDO;
 
@@ -43,23 +46,24 @@ class AuthController {
     }
 
     public static function logout(PDO $pdo) {
-        $decodeToken = checkJWT($pdo);
+        $decodeToken = TokenHandler::checkJWT($pdo);
         $headers = getallheaders();
         $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
         $token = str_replace('Bearer ', '', $authHeader);
 
         try {
-            $stmt = $pdo->prepare("INSERT INTO jwt_blacklist (token, expires_at) VALUES (:token, :expires_at)");
+            $stmt = $pdo->prepare("INSERT INTO jwt_blacklist (token, user_id, expires_at) VALUES (:token, :userid, :expires_at)");
             $stmt->execute([
                 ':token' => $token,
+                ':userid' => $decodeToken->user_id,
                 ':expires_at' => date('Y-m-d H:i:s', $decodeToken->exp)
             ]);
 
-            return json_encode(["success" => true, "message" => "Déconnexion réussie"]);
+            return json_encode(["success" => true, "message" => "Logout with succes !"]);
 
         } catch (Exception $e) {
             http_response_code(500);
-            return json_encode(["error" => "Erreur lors de la déconnexion", "Informations" => $e->getMessage()]);
+            return json_encode(["error" => "Error while login out", "Informations" => $e->getMessage()]);
         }
     }
 
