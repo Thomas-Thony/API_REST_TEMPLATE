@@ -1,0 +1,6 @@
+# Global exclusions
+node_modules
+.env
+/vendor
+/.vscode
+composer.lock
