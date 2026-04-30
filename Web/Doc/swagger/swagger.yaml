@@ -1,0 +1,134 @@
+openapi: 3.0.0
+info:
+  title: API REST Template Documentation
+  version: 1.0.0
+  description: |
+    Welcome into the API documentation !
+
+    ## Authentification
+
+    This API use Bearer token authentification. To authenticate, follow theses steps : 
+    
+    1. **Get JWT token** : Use the `/login` endpoint to get JWT token by giving your mail and your password.
+    2. **Autorize Swagger UI** : Click to the "Authorize" on the top left of Swagger UI. Enter your JWT `Bearer` (for example, `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`).
+    3. **Do requests** : Once authorized, Swagger UI will include automaticly your Bearer token in the Authorization's header to do requets into safe endpoints.
+
+servers:
+  - url: http://localhost/API_REST_Template/
+    description: Local server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /login: 
+    post:
+      tags: 
+        - Authentification
+      summary: Login as a classic user
+      description: Return the JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              items:
+              properties:
+                mail:
+                  type: string
+                  exemple: "hello@world.com" 
+                password: 
+                  type: string
+                  exemple: abc123
+      responses:
+        "200":
+          description: Success
+          content: 
+            application/json:
+              schema:
+                type: string
+                example: "token : eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMywiZXhwIjoxNzc3NTUwMjA0fQ.1uHY76nABpeL8EBDf7rBeQI0Z7WcNRMIhS4hLtrNlLY"
+        "401":
+          description: Fail or error
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Error while login or register : Mail or password incorrect"
+  /register: 
+    post:
+      tags: 
+        - Authentification
+      summary: Register as a classic user
+      description: Return the JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              items:
+              properties:
+                username:
+                  type: string
+                  exemple: "hello@world.com" 
+                name: 
+                  type: string
+                  exemple: abc123
+                mail: 
+                  type: string
+                  exemple: abc123
+                password: 
+                  type: string
+                  exemple: abc123
+      responses:
+        "200":
+          description: Success
+          content: 
+            application/json:
+              schema:
+                type: string
+                example: "token : eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMywiZXhwIjoxNzc3NTUwMjA0fQ.1uHY76nABpeL8EBDf7rBeQI0Z7WcNRMIhS4hLtrNlLY"
+        "401":
+          description: Fail or error
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Error while login or register : Mail or password incorrect"
+
+  /logout:
+    post:
+      tags:
+        - Authentification
+      summary: Logout and add the user JWT as blacklisted (Session expired)
+      description: Retourne un utilisateur en fonction de l'identifiant donné
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    statut:
+                      type: string
+                      example: success
+                    informations:
+                      type: string
+                      example: Logged out with success
+        "401":
+          description: Non autorisé
+
+  /doc:
+    get:
+      summary: Get the link to the documentation
+      description:
+      tags: 
+        - Other
