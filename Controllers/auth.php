@@ -1,6 +1,7 @@
 <?php
 
 namespace ApiTemplate\Controllers;
+require_once "./Handlers/Globals.php";
 use ApiTemplate\Handlers\ApiHandler;
 use ApiTemplate\Handlers\Globals;
 use ApiTemplate\Models\AuthModel;
@@ -18,7 +19,7 @@ class AuthController {
             return ApiHandler::authentificationFailed("Mail or password incorrect");
         } else {
             $userPassword = $user["password"];
-            if(password_verify($userPassword, $password) === true){
+            if(password_verify($password, $userPassword) === true){
                 $userInfos = AuthModel::login($pdo, $mail);
                 $payload = [
                     "user_id" => $userInfos["id"],
@@ -33,11 +34,11 @@ class AuthController {
         }
     }
 
-    public static function register(PDO $pdo, string $username, string $name, string $mail, string $password): string|bool {
+    public static function register(PDO $pdo, string $username, string $name, string $mail, string $passwordHashed, string $naturalPassword): string|bool {
         if(self::userExist($pdo, $mail) !== true){
-            return AuthModel::getRegister($pdo,  $username, $name, $mail, $password);
+            return AuthModel::getRegister($pdo,  $username, $name, $mail, $passwordHashed, $naturalPassword);
         } else {
-                return json_encode("This user already exist !");
+            return json_encode("This user already exist !");
         }
     }
 

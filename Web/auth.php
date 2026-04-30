@@ -26,7 +26,7 @@ function register(PDO $pdo, array $data) : string | bool {
         $password = $data["password"];
         $hashPassword = password_hash($password, PASSWORD_DEFAULT);
         
-        return AuthController::register($pdo, $username, $name, $mail, $hashPassword);
+        return AuthController::register($pdo, $username, $name, $mail, $hashPassword, $password);
     }
 }
 
